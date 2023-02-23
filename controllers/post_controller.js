@@ -4,7 +4,7 @@ const fs = require("fs");
 const moment = require('moment');
 
 module.exports.createPost = async function (req, res) {
-   try {      
+   try {
       const today = moment().format("DD MMM, YYYY");
       let postBody = {
          author: req.userid,
@@ -15,22 +15,18 @@ module.exports.createPost = async function (req, res) {
       const author = await User.findById(req.userid);
       const newPost = await Post.create(postBody);
       
-      const imagePaths = [];
+      const imagePaths = []; // path of all posted images
 
       if(req.files.length > 0){
-         const destination = req.files[0].destination.split("\\");
-         const currentFolder = destination[destination.length - 1];
-         const currentDir = `uploads/posts/${currentFolder}`;
          const newDir = `uploads/posts/post-${newPost.id}`;
 
-         if (fs.existsSync(currentDir)) {
-            fs.renameSync(currentDir, newDir);
-            console.log('directory rename successfully');
+         if (fs.existsSync(req.currentDir)) {
+            fs.renameSync(req.currentDir, newDir);
+            console.log('directory rename successful in create-post controller');
          }         
 
          for(let file of req.files){
-            console.log(file.originalname);
-            imagePaths.push(newDir + '/' + file.originalname);
+            imagePaths.push(`${newDir}/${file.originalname}`);
          }
       }
 
@@ -49,7 +45,7 @@ module.exports.createPost = async function (req, res) {
             images: newPost.images,
             comments: [],
             likes: 0,
-            liked: false
+            liked: false,
          },
       });
 
@@ -110,7 +106,7 @@ module.exports.deletePost = async function (req, res) {
 
          const postImagesPath = `uploads/posts/post-${req.params.postid}`;
          if (fs.existsSync(postImagesPath)) {
-            fs.rmdirSync(postImagesPath, { recursive: true });
+            fs.rmSync(postImagesPath, { recursive: true });
             console.log('directory deleted successfully');
          }
 
@@ -143,8 +139,6 @@ module.exports.likePost = async function (req, res) {
             post.likes.push(req.userid);
             post.save();
          }
-
-         console.log('likes', post.likes);
 
          return res.json({
             success: true,

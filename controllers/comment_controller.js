@@ -4,7 +4,6 @@ const User = require('../models/user');
 
 module.exports.createComment = async function (req, res) {
    try {
-      // console.log("post", req.params.postid);
       const post = await Post.findById(req.params.postid);
       
       if(post){
@@ -19,7 +18,6 @@ module.exports.createComment = async function (req, res) {
          post.save();
 
          const author = await User.findById(req.userid);
-         // console.log("post comment", post.comments);
    
          return res.status(200).json({
             success: true,

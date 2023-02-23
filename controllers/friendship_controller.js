@@ -34,26 +34,19 @@ module.exports.removeFriendReq = async function (req, res) {
    try {
       const crrUser = await User.findById(req.userid).populate('friendship.requests');
       const profileUser = await User.findById(req.query.id).populate('friendship.requests');
-      console.log("before", crrUser.friendship.requests.length);
       if (profileUser){
          if(req.query.self){
             crrUser.friendship.requests.pull(profileUser._id);
             crrUser.save();
-            // data.requests = crrUser.friendship.requests;
          }
          else if (!req.query.self) {
             profileUser.friendship.requests.pull(crrUser._id);
             profileUser.save();
          }
    
-         console.log("after", crrUser.friendship.requests.length);
-
-         // console.log("friend request removed", crrUser.friendship.requests);
-   
          return res.json({
             success: true,
             message: "friend request removed successfully",
-            // data
          });
       }
 
@@ -80,7 +73,6 @@ module.exports.addFriend = async function (req, res) {
          user.friendship.requests.pull(friend._id);
          user.save();
 
-         console.log("friend added successfully");
          return res.json({
             success: true,
             message: "friend added successfully",
@@ -109,7 +101,6 @@ module.exports.removeFriend = async function (req, res) {
          user.friendship.friends.pull(friend._id);
          user.save();
          
-         console.log("friend removed successfully");
          return res.json({
             success: true,
             message: "friend removed successfully",

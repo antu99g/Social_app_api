@@ -124,7 +124,6 @@ module.exports.userDetails = async function (req, res) {
 
 module.exports.fetchPosts = async function (req, res) {
    try {
-      // console.log('function working');
       let user = await User.findById(req.params.id);
       
       if(user){
@@ -153,7 +152,6 @@ module.exports.fetchPosts = async function (req, res) {
                   likes: i.likes.length,
                   liked: i.likes.includes(req.userid),
                };
-               // console.log("liked", postBody.liked);
                data.push(postBody);
             }
          }
@@ -182,12 +180,10 @@ module.exports.updateUserDetails = async function (req, res) {
       if (req.body.username) {
          const updatedUser = await User.findByIdAndUpdate(req.userid, { username: req.body.username }, {new: true});
          updatedData = {username: updatedUser.username};
-         console.log(updatedData);
       }
       else if (req.body.description) {
          const updatedUser = await User.findByIdAndUpdate(req.userid, { description: req.body.description }, {new: true});
          updatedData = {description: updatedUser.description};
-         console.log(updatedData);
       }
       else {
          throw new Error('no data found');
@@ -215,26 +211,20 @@ module.exports.updateUserAvatar = async function (req, res){
          throw new Error("user not found");
       }
 
-      // console.log('avatar', user.avatar);
       const currentAvatar = user.avatar.split("/")[2];
-      // console.log("currentAvatar", currentAvatar);
       if (currentAvatar !== "default") {
          const currentAvatarPath = path.join(__dirname, "..", user.avatar);
          if (fs.existsSync(currentAvatarPath)) {
             fs.unlinkSync(currentAvatarPath);
-            // console.log('deleted');
          }
       }
       
-      // console.log('filename', req.filename);
       user.avatar = 'uploads/profiles/' + req.file.filename;
       user.save();
-
             
       return res.json({
          success: true,
          data: {avatar: user.avatar}
-         // imageURI: user.avatar
       });
 
    } catch(err) {

@@ -10,8 +10,9 @@ const avatarStorage = multer.diskStorage({
       cb(null, path.join(__dirname, "..", AVATAR_PATH));
    },
    filename: function (req, file, cb) {
-      const extension = file.originalname.split(".");
-      cb(null, file.fieldname + "-" + Date.now() + "." + extension[1]);
+      let extension = file.originalname.split(".");
+      extension = extension[extension.length - 1];
+      cb(null, file.fieldname + "-" + Date.now() + "." + extension);
    },
 });
 
@@ -22,23 +23,22 @@ const POSTS_PATH = path.join("uploads/posts");
 
 const postStorage = multer.diskStorage({
    destination: async function (req, file, cb) {
-      // console.log('file', file);
       const posts = await Post.find({});
-      // console.log('length', posts.length);
       const dir = `${POSTS_PATH}/post-${posts.length || 0}`;
       try {
          if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir);
-            // console.log("Directory is created.");
+            req.currentDir = dir;
+         } else {
+            console.log('post directory already present');
          }
       } catch (err) {
-         console.log("error in making dir", err);
+         console.log("error in making directory");
       }
 
       cb(null, path.join(__dirname, "..", dir));
    },
    filename: function (req, file, cb) {
-      // console.log('file', file.originalname);
       cb(null, file.originalname);
    },
 });
