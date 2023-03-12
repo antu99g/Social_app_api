@@ -41,6 +41,7 @@ module.exports.signup = async function (req, res) {
             },
          });
       }
+      
    } catch (err) {
       return res.status(404).json({
          success: false,
