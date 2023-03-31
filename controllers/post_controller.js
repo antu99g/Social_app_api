@@ -11,7 +11,7 @@ module.exports.createPost = async function (req, res) {
          createdOn: today,
          comments: [],
          likes: [],
-      };
+      }; 
       const author = await User.findById(req.userid);
       const newPost = await Post.create(postBody);
       
